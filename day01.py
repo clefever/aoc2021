@@ -2,6 +2,10 @@ import adventofcode
 
 
 def part1(input):
+    """
+    >>> part1(['199', '200', '208', '210', '200', '207', '240', '269', '260', '263'])
+    7
+    """
     count = 0
     for i in range(len(input)-1):
         if int(input[i]) < int(input[i+1]):
@@ -10,6 +14,10 @@ def part1(input):
 
 
 def part2(input):
+    """
+    >>> part2(['199', '200', '208', '210', '200', '207', '240', '269', '260', '263'])
+    5
+    """
     count = 0
     for i in range(len(input)-3):
         a = int(input[i]) + int(input[i+1]) + int(input[i+2])
