@@ -6,19 +6,12 @@ def part1(input):
     >>> part1(['00100', '11110', '10110', '10111', '10101', '01111', '00111', '11100', '10000', '11001', '00010', '01010'])
     198
     """
-    dict = {}
-    length = len(input)
-    lineLength = len(input[0])
-    for line in input:
-        for pos in range(len(line)):
-            if pos in dict:
-                dict[pos] += int(line[pos])
-            else:
-                dict[pos] = int(line[pos])
     gamma = 0
     epsilon = 0
-    for i in range(lineLength):
-        if dict[i] > (length / 2):
+    dict = get_bit_counts(input)
+
+    for i in range(len(input[0])):
+        if dict[i] > (len(input) / 2):
             gamma = (gamma << 1) + 1
             epsilon = epsilon << 1
         else:
@@ -32,67 +25,35 @@ def part2(input):
     >>> part2(['00100', '11110', '10110', '10111', '10101', '01111', '00111', '11100', '10000', '11001', '00010', '01010'])
     230
     """
-    oxygen = calc_oxygen(input, 0)
-    co2 = calc_co2(input, 0)
+    oxygen = calc_life_support(input, 0, False)
+    co2 = calc_life_support(input, 0, True)
     return int(oxygen[0], 2) * int(co2[0], 2)
 
 
-def calc_oxygen(input, bit):
+def get_bit_counts(list):
     dict = {}
-    length = len(input)
-    lineLength = len(input[0])
-    for line in input:
+    for line in list:
         for pos in range(len(line)):
             if pos in dict:
                 dict[pos] += int(line[pos])
             else:
                 dict[pos] = int(line[pos])
-    oxygen = input.copy()
+    return dict
 
-    if bit >= lineLength:
-        return oxygen
 
-    if dict[bit] >= (length / 2):
-        if len(oxygen) > 1:
-            oxygen = [x for x in oxygen if x[bit] == '1']
-            return calc_oxygen(oxygen, bit+1)
-        else:
-            return oxygen
+def calc_life_support(input, bit, invert):
+    lines = input.copy()
+    dict = get_bit_counts(input)
+
+    if bit >= len(input[0]) or len(lines) <= 1:
+        return lines
+
+    if (dict[bit] >= (len(input) / 2)) ^ invert:
+        lines = [x for x in lines if x[bit] == '1']
+        return calc_life_support(lines, bit+1, invert)
     else:
-        if len(oxygen) > 1:
-            oxygen = [x for x in oxygen if x[bit] == '0']
-            return calc_oxygen(oxygen, bit+1)
-        else:
-            return oxygen
-
-
-def calc_co2(input, bit):
-    dict = {}
-    length = len(input)
-    lineLength = len(input[0])
-    for line in input:
-        for pos in range(len(line)):
-            if pos in dict:
-                dict[pos] += int(line[pos])
-            else:
-                dict[pos] = int(line[pos])
-    co2 = input.copy()
-
-    if bit >= lineLength:
-        return co2
-
-    if dict[bit] >= (length / 2):
-        if len(co2) > 1:
-            co2 = [x for x in co2 if x[bit] == '0']
-            return calc_co2(co2, bit+1)
-        else:
-            return co2
-    else:
-        if len(co2) > 1:
-            co2 = [x for x in co2 if x[bit] == '1']
-            return calc_co2(co2, bit+1)
-        else:
-            return co2
+        lines = [x for x in lines if x[bit] == '0']
+        return calc_life_support(lines, bit+1, invert)
 
 
 def main():
